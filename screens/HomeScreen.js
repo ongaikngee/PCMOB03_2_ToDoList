@@ -11,12 +11,11 @@ export default function HomeScreen({ navigation, route }) {
 	console.log(FileSystem.documentDirectory);
 
 	function renderItem({ item }) {
-		let BGCOLOR = '';
-		BGCOLOR = item.done ? 'gray' : 'papayawhip';
+		const BGCOLOR = item.done ? 'gray' : 'papayawhip';
 		return (
 			<View style={[ styles.renderFlatlist, { backgroundColor: BGCOLOR } ]}>
 				<TouchableOpacity onPress={() => CompleteNotes(item.id)}>
-					<Text style={{ textAlign: 'left', fontSize: 16, backgroundColor: BGCOLOR }}>{item.title}</Text>
+					<Text style={{ textAlign: 'left', fontSize: 16, }}>{item.title}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={() => deleteNotes(item.id)}>
 					<AntDesign name="delete" size={24} color="black" />
