@@ -10,21 +10,25 @@ export default function HomeScreen({ navigation, route }) {
 	const [ notes, setNotes ] = useState([]);
 	console.log(FileSystem.documentDirectory);
 
-	function renderItem({ item }) {
+	const renderItem = ({ item }) => {
 		const BGCOLOR = item.done ? 'gray' : 'papayawhip';
+		const ICON_DONE = item.done ? 'radio-button-on' : 'radio-button-off';
 		return (
-			<View style={[ styles.renderFlatlist, { backgroundColor: BGCOLOR } ]}>
-				<TouchableOpacity onPress={() => CompleteNotes(item.id)}>
-					<Text style={{ textAlign: 'left', fontSize: 16, }}>{item.title}</Text>
+			<View style={[ styles.renderFlatlist, { backgroundColor: BGCOLOR, flex:1 } ]}>
+				<TouchableOpacity onPress={() => completeNotes(item.id)}>
+					<Ionicons name={ICON_DONE} size={24} color="black" />
+				</TouchableOpacity>
+				<TouchableOpacity onPress={() => completeNotes(item.id)} style={{flex:8, marginLeft:5}}>
+					<Text style={{ textAlign: 'left', fontSize: 16 }}>{item.title}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={() => deleteNotes(item.id)}>
 					<AntDesign name="delete" size={24} color="black" />
 				</TouchableOpacity>
 			</View>
 		);
-	}
+	};
 
-	function refreshNotes() {
+	const refreshNotes = () => {
 		db.transaction((tx) => {
 			tx.executeSql(
 				'SELECT * FROM notes ORDER BY done',
@@ -33,9 +37,9 @@ export default function HomeScreen({ navigation, route }) {
 				(txObj, error) => console.log(`Error: ${error}`)
 			);
 		});
-	}
+	};
 
-	function deleteNotes(id) {
+	const deleteNotes = (id) => {
 		db.transaction(
 			(tx) => {
 				tx.executeSql(
@@ -48,14 +52,48 @@ export default function HomeScreen({ navigation, route }) {
 			null,
 			refreshNotes
 		);
-	}
+	};
 
-	function CompleteNotes(id) {
+	const completeNotes = (id) => {
+
+		//get the current done status
+
+		//from demo
+		// db.transaction(
+		// 	(tx) => {
+		// 		tx.executeSql('insert into items (done, value) values (0, ?)', [ text ]);
+		// 		tx.executeSql('select * from items', [], (_, { rows }) => console.log(JSON.stringify(rows)));
+		// 	},
+		// 	null,
+		// 	forceUpdate
+		// );
+		//end demo
+
+
+		//Wanted to find out the current done status and store somewhere. 
+		// db.transaction(
+		// 	(tx) => {
+		// 		tx.executeSql(
+		// 			'SELECT done from notes where id = ?',
+		// 			[ id ],
+		// 			(_, { rows }) => rows._array[0].done?1:0,
+		// 			// (_, { rows }) => alert(rows._array[0].done),
+		// 			// (txObj, { rows: { _array } }) => setNotes(_array),
+		// 			(txObj, error) => console.log(`Error: ${error}`)
+		// 		);
+		// 	},
+		// 	null,
+		// 	null
+		// );
+
+		//temp to manually set the done to what status.
+		let done = 1;	
+
 		db.transaction(
 			(tx) => {
 				tx.executeSql(
-					'UPDATE notes SET done = 1 WHERE id = ?',
-					[ id ],
+					'UPDATE notes SET done = ? WHERE id = ?',
+					[ done, id ],
 					(txObj, { rows: { _array } }) => setNotes(_array),
 					(txObj, error) => console.log(`Error: ${error}`)
 				);
@@ -63,7 +101,7 @@ export default function HomeScreen({ navigation, route }) {
 			null,
 			refreshNotes
 		);
-	}
+	};
 
 	// This is to set up the database on first run
 	useEffect(() => {
